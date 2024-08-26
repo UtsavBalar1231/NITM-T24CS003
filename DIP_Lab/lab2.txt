@@ -1,0 +1,1 @@
+Implent of Image addition and complement, logical operators like (NOT, AND, OR and XOR) on images, geometric operations
