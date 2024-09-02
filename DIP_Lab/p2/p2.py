@@ -1,10 +1,11 @@
 # Image processing practical 2
 # 1: Image addition, complement
 # 2: logical operations on images like (AND, OR, NOT, XOR)
-# TODO: Geometric operations
+# TODO: Geometric operations, (scaling, translation, rotation, affine transform)
 
 import cv2 as cv
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def check_img_compatibility(img1, mask):
@@ -84,8 +85,8 @@ if __name__ == "__main__":
     purple_mask = cv.resize(purple_mask, (img1_depth[1], img1_depth[0]))
 
     # Arithmetic operations
-    cv_image_addition(img1, purple_mask)
-    cv_image_complement(img1, purple_mask)
+    # cv_image_addition(img1, purple_mask)
+    # cv_image_complement(img1, purple_mask)
 
     # Logical operations
     mask = cv.imread("./mask.png", cv.IMREAD_UNCHANGED)
@@ -94,9 +95,17 @@ if __name__ == "__main__":
 
     img1_inv = cv.bitwise_not(img1)
 
-    cv_image_logical_and_mask(img1_inv, mask)
-    cv_image_logical_or_mask(img1_inv, mask)
-    cv_image_logical_xor_mask(img1_inv, mask)
+    # cv_image_logical_and_mask(img1_inv, mask)
+    # cv_image_logical_or_mask(img1_inv, mask)
+    # cv_image_logical_xor_mask(img1_inv, mask)
+
+    rows,cols = img1.shape[:2]
+    matx = np.float32([[1, 0, 100], [0, 1, 50]])
+    dst = cv.warpAffine(img1, matx, (rows, cols))
+
+    cv.imshow("Image", dst)
+
+    plt.show()
 
     cv.waitKey(0)
     cv.destroyAllWindows()
