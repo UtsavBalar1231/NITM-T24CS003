@@ -1,0 +1,26 @@
+# Stock Trading Problem
+
+Trader has series of stock prices over 'n' consecutive days.
+Trader is permitted to perform k transactions.
+
+A trasaction is a single buy followed by a single sell.
+
+A new transaction can only be initiated after the completion of previous one.
+
+GOAL: Determine the max possible profit after the trader can achieve given the contraints on the number of transactions and the requirement that each buy must precede its corresponding sell.
+
+INPUTS:
+- Int 'n' number of days
+- Int 'k' max number of transactions
+- Array of prices where prices[i] is the stock price on day i (0 <= i < n)
+
+
+OBJECTIVE:
+Calculate max profit that can be attained by strategically executing up to 'k' buy-sell transactions. 
+
+Each transaction must start with a buy on the day and end with a sell on a subsequent day.
+
+CONTRAINTS:
+1. 1 <= n <= 10^5
+2. 1 <= k <= 100
+3. 0 <= prices[i] <= 10^4
