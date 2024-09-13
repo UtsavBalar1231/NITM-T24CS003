@@ -42,9 +42,7 @@ fn maximum_profit(k: usize, prices: Vec<isize>) -> isize {
     // If k is larger than n/2, we can perform transactions every day.
     if k >= n / 2 {
         let mut max_profit = 0;
-
         (1..n).for_each(|i| max_profit += (prices[i] - prices[i - 1]).max(0));
-
         return max_profit;
     }
 
