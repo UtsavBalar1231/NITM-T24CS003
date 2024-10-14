@@ -16,12 +16,12 @@ fn void main() {
 			max_profit = max((PRICES[i] - PRICES[i - 1]), 0);
 		}
 	}
-
 	io::printfn("DAYS: %d, no. of transactions: %d", DAYS, K);
+
 	int[K + 1][DAYS + 1] dp; 
 
 	for (usz t = 1; t <= K; ++t) {
-		for (usz d = 1; d < DAYS; ++d) {
+		for (usz d = 1; d < DAYS - 1; ++d) {
 			int max_price_diff = -PRICES[0];
 
 			dp[t][d] = max(dp[t][d - 1], PRICES[d] + max_price_diff);

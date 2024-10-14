@@ -1,4 +1,4 @@
-use rand::{thread_rng, Rng};
+// use rand::{thread_rng, Rng};
 
 /// # Stock Trading Problem
 ///
@@ -52,19 +52,19 @@ fn maximum_profit(k: usize, prices: Vec<isize>) -> isize {
     for t in 1..=k {
         let mut max_price_diff: isize = -prices[0];
         for d in 1..n {
-            println!(
-                "On day {d} with transaction {t} price on day {}, price on previous day {}",
-                prices[d],
-                prices[d - 1]
-            );
+            // println!(
+            //     "On day {d} with transaction {t} price on day {}, price on previous day {}",
+            //     prices[d],
+            //     prices[d - 1]
+            // );
             dp[d][t] = dp[d - 1][t].max(prices[d] + max_price_diff);
-            println!(
-                "dp[{d}][{t}] is the max of {} and {}",
-                dp[d - 1][t],
-                prices[d] + max_price_diff
-            );
+            // println!(
+            //     "dp[{d}][{t}] is the max of {} and {}",
+            //     dp[d - 1][t],
+            //     prices[d] + max_price_diff
+            // );
             max_price_diff = max_price_diff.max(dp[d - 1][t - 1] as isize - prices[d]);
-            println!("max_price_diff is set to {}", max_price_diff);
+            // println!("max_price_diff is set to {}", max_price_diff);
         }
     }
 
@@ -72,15 +72,15 @@ fn maximum_profit(k: usize, prices: Vec<isize>) -> isize {
 }
 
 fn main() {
-    let mut rng = thread_rng();
-    let k: usize = rng.gen_range(0..100);
+    // let mut rng = thread_rng();
+    // let k: usize = rng.gen_range(0..100);
 
-    let prices_capacity = rng.gen_range(0..10_000);
-    let mut prices = Vec::with_capacity(prices_capacity);
-    (0..prices_capacity).for_each(|_| prices.push(rng.gen_range(0..10_000)));
+    // let prices_capacity = rng.gen_range(0..10_000);
+    // let mut prices = Vec::with_capacity(prices_capacity);
+    // (0..prices_capacity).for_each(|_| prices.push(rng.gen_range(0..10_000)));
 
-    // let k = 3;
-    // let prices: Vec<isize> = Vec::from([30, 40, 10, 45, 20, 15]);
+    let k = 3;
+    let prices: Vec<isize> = Vec::from([30, 40, 10, 45, 20, 15]);
     // let prices = vec![11, 85, 67, 33, 45, 12, 8, 77, 11];
     // let prices = vec![2, 4, 1];
 
