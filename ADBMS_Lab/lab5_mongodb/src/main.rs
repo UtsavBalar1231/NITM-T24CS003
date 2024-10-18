@@ -1,12 +1,12 @@
 #![allow(dead_code)]
 
 extern crate mongodb;
-use std::fmt::Formatter;
-
 use futures_util::TryStreamExt;
 use mongodb::bson::{doc, Document};
 use mongodb::{options::ClientOptions, Client};
 use serde::{Deserialize, Serialize};
+use std::fmt::Formatter;
+use termion::terminal_size;
 
 #[derive(Serialize, Deserialize)]
 struct Student {
@@ -61,19 +61,26 @@ async fn get_filtered_documents(
     let mut cursor = coll
         .find(filter)
         .projection({
-            if projection.is_none() {
-                doc! {"_id": 0, "roll_num": 1, "first_name": 1, "last_name": 1, "age": 1, "department": 1, "marks": 1}
+            if let Some(projection) = projection {
+                projection
             } else {
-                projection.unwrap()
+                doc! {"_id": 0, "roll_num": 1, "first_name": 1, "last_name": 1, "age": 1, "department": 1, "marks": 1}
             }
         })
         .await
         .unwrap();
+
+    if let Ok((width, _height)) = terminal_size() {
+        println!("{}", "-".repeat(width as usize));
+    }
+
     while let Some(doc) = cursor.try_next().await.unwrap() {
         println!("{}", doc);
     }
 
-    println!("---------------------------------------------------------------");
+    if let Ok((width, _height)) = terminal_size() {
+        println!("{}", "-".repeat(width as usize));
+    }
     println!("\n");
 }
 
@@ -98,6 +105,10 @@ async fn get_aggregated_documents(
         .await
         .expect("Failed to aggregate documents");
 
+    if let Ok((width, _height)) = terminal_size() {
+        println!("{}", "-".repeat(width as usize));
+    }
+
     while let Some(doc) = results
         .try_next()
         .await
@@ -106,25 +117,14 @@ async fn get_aggregated_documents(
         println!("{}", doc);
     }
 
-    println!("---------------------------------------------------------------");
+    if let Ok((width, _height)) = terminal_size() {
+        println!("{}", "-".repeat(width as usize));
+    }
     println!("\n");
 }
 
-#[tokio::main]
-async fn main() {
-    let client_options = ClientOptions::parse("mongodb://localhost:27017")
-        .await
-        .expect("ClientOptions failed to parse");
-    let client = Client::with_options(client_options).expect("Failed to create client");
-    let db_name: &str = "t24cs004_lab5";
-    let db = client.database(db_name);
-    let collection: &str = "cs553";
-
-    db.create_collection(collection)
-        .await
-        .expect("Failed to create collection");
-
-    let students: Vec<Student> = vec![
+fn generate_students_data() -> Vec<Student> {
+    vec![
         Student::new(
             43,
             "John".to_string(),
@@ -165,34 +165,55 @@ async fn main() {
             "Physics".to_string(),
             92,
         ),
-    ];
+    ]
+}
+
+#[tokio::main]
+async fn main() {
+    let client_options = ClientOptions::parse("mongodb://localhost:27017")
+        .await
+        .expect("ClientOptions failed to parse");
+    let client = Client::with_options(client_options).expect("Failed to create client");
+    let db_name: &str = "t24cs004_lab5";
+    let db = client.database(db_name);
+    let collection: &str = "cs553";
+
+    db.create_collection(collection)
+        .await
+        .expect("Failed to create collection");
+
+    let students: Vec<Student> = generate_students_data();
 
     for student in students {
         insert_student(&client, db_name, student, collection).await;
     }
 
-    // 3. Write a MongoDB query to find all students.
+    println!("3. Write a MongoDB query to find all students.");
     let filter = doc! {"roll_num": doc! {"$exists": true}};
     get_filtered_documents(&client, db_name, collection, filter, None).await;
 
-    // 4. Write a MongoDB query to find all students in the "Computer Science" department.
+    println!(
+        "4. Write a MongoDB query to find all students in the \"Computer Science\" department."
+    );
     let filter = doc! {"department": "Computer Science"};
     get_filtered_documents(&client, db_name, collection, filter, None).await;
 
-    // 5. Write a MongoDB query to find all students whose age is greater than or equal to 20.
+    println!(
+        "5. Write a MongoDB query to find all students whose age is greater than or equal to 20."
+    );
     let filter = doc! {"age": doc! {"$gte": 20}};
     get_filtered_documents(&client, db_name, collection, filter, None).await;
 
-    // 6. Write a MongoDB query to find all students whose mark is less than 60.
+    println!("6. Write a MongoDB query to find all students whose mark is less than 60.");
     let filter = doc! {"marks": doc! {"$lt": 60}};
     get_filtered_documents(&client, db_name, collection, filter, None).await;
 
-    // 7. Write a MongoDB query to show the first name and Mark of all students in the "Physics" department.
+    println!("7. Write a MongoDB query to show the first name and Mark of all students in the \"Physics\" department.");
     let filter = doc! {"department": "Physics"};
     let projection = doc! {"first_name": 1, "marks": 1, "_id": 0};
     get_filtered_documents(&client, db_name, collection, filter, Some(projection)).await;
 
-    // 8. Write a MongoDB query to find all students in the descending order of Mark.
+    println!("8. Write a MongoDB query to find all students in the descending order of Mark.");
     let filter = vec![
         doc! {
         "$sort": {
@@ -206,7 +227,7 @@ async fn main() {
     ];
     get_aggregated_documents(&client, db_name, collection, filter).await;
 
-    // 9. Write a MongoDB query to find the youngest student.
+    println!("9. Write a MongoDB query to find the youngest student.");
     let filter = vec![
         doc! {
         "$sort": {
@@ -222,7 +243,7 @@ async fn main() {
     ];
     get_aggregated_documents(&client, db_name, collection, filter).await;
 
-    // 10. Write a MongoDB query to find all students in the "Physics" department whose RollNum is greater than or equal to 70.
+    println!("10. Write a MongoDB query to find all students in the \"Physics\" department whose RollNum is greater than or equal to 70.");
     let filter = vec![
         doc! {
         "$match": {
