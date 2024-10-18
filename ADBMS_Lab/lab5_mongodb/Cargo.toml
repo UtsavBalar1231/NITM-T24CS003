@@ -1,0 +1,10 @@
+[package]
+name = "lab5_mongodb"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mongodb = "3.1.0"
+tokio = { version = "1.40.0", features = ["full"] }
+serde = { version = "1.0.210", features = ["derive"] }
+futures-util = "0.3.31"
